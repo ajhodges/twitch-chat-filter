@@ -132,33 +132,73 @@ var message_is_spam = function(msg){
 
 // --- UI ---
 
-$(
-    "<style type='text/css' >" +
-        ".segmented_tabs li li a.CommandsToggle {" +
-            "width: 50px;" +
-            "padding-left: 0;" +
-            "padding-top: 0;" +
-            "height: 8px;" +
-            "line-height: 115%;" +
-        "}" +
+if ($("body").hasClass("popout_chat")) {
+  $(
+      "<style type='text/css' >" +
+          ".CommandsToggle {" +
+              "width: 50px;" +
+              "padding-left: 0px;" +
+              "padding-top: 0;" +
+              "height: 8px;" +
+              "line-height: 115%;" +
+          "}" +
 
-        ".segmented_tabs li li a.ChatToggle {" +
-            "width: 35px;" +
-            "padding-left: 15px;" +
-            "padding-top: 0;" +
-            "height: 8px;" +
-            "line-height: 115%;" +
-        "}" +
+          ".ChatToggle {" +
+              "width: 35px;" +
+              "padding-left: 15px;" +
+              "padding-top: 0;" +
+              "height: 8px;" +
+              "line-height: 115%;" +
+          "}" +
 
-        "#chat_line_list li { display:none }" + // hide new, uncategorized messages
+          "#chat_line_list li { display:none }" + // hide new, uncategorized messages
 
-        "#chat_line_list li.fromjtv,"         + // show twitch error messages
-        "#chat_line_list.showSpam li.cSpam,"  + // show commands if they toggled on
-        "#chat_line_list.showSafe li.cSafe {" + // show non-commands if they are enabled
-            "display:inherit;" +
-        "}" +
-    " </style>"
-).appendTo("head");
+          "#chat_line_list li.fromjtv,"         + // show twitch error messages
+          "#chat_line_list.showSpam li.cSpam,"  + // show commands if they toggled on
+          "#chat_line_list.showSafe li.cSafe {" + // show non-commands if they are enabled
+              "display:inherit;" +
+          "}" +
+      " </style>"
+  ).appendTo("head");
+  
+  $("#wrapper").prepend("<li><a class='CommandsToggle'>Commands</a><a class='ChatToggle'>Talk</a></li>");
+} else {
+  $(
+      "<style type='text/css' >" +
+          ".segmented_tabs li li a.CommandsToggle {" +
+              "width: 50px;" +
+              "padding-left: 0px;" +
+              "padding-top: 0;" +
+              "height: 8px;" +
+              "line-height: 115%;" +
+          "}" +
+
+          ".segmented_tabs li li a.ChatToggle {" +
+              "width: 35px;" +
+              "padding-left: 15px;" +
+              "padding-top: 0;" +
+              "height: 8px;" +
+              "line-height: 115%;" +
+          "}" +
+
+          "#chat_line_list li { display:none }" + // hide new, uncategorized messages
+
+          "#chat_line_list li.fromjtv,"         + // show twitch error messages
+          "#chat_line_list.showSpam li.cSpam,"  + // show commands if they toggled on
+          "#chat_line_list.showSafe li.cSafe {" + // show non-commands if they are enabled
+              "display:inherit;" +
+          "}" +
+      " </style>"
+  ).appendTo("head");
+
+
+  // Reduce the width of the chat button to fit the extra buttons we will add.
+  var chat_button = $("ul.segmented_tabs li a").first();
+  chat_button.css("width", chat_button.width() - 71);
+
+  // Add a pair of buttons to toggle the spam on and off.
+  $("<li><a class='CommandsToggle'>Commands</a><a class='ChatToggle'>Talk</a></li>").insertAfter(chat_button);
+}
 
 
 // Reduce the width of the chat button to fit the extra buttons we will add.
