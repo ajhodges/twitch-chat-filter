@@ -254,60 +254,56 @@ function convert_copy_paste(message){
 }
 
 // --- Filtering ---
-
+function Option(name, comment, update, isActive){
+    this.name = name;
+    this.comment = comment;
+    this.isActive = isActive;
+    this.update = update;
+}
 //Filters have predicates that are called for every message
 //to determine whether it should get dropped or not
+function Filter(name, comment, predicate, isActive){
+    this.base = Option;
+    this.base(name, comment, update_chat_with_filter, isActive);
+    this.predicate = predicate;
+}
+Filter.prototype = new Option;
 var filters = [
-  { name: 'TppFilterCommand',
-    comment: "Commands (up, down, anarchy, etc)",
-    isActive: true,
-    predicate: message_is_command
-  },
-  
-  { name: 'TppFilterLink',
-    comment: "Non-whitelisted URLs",
-    isActive: true,
-    predicate: message_is_forbidden_link
-  },
-  
-  { name: 'TppFilterDonger',
-    comment: "Ascii art and dongers",
-    isActive: false,
-    predicate: message_is_donger
-  },
-  
-  { name: 'TppFilterSmall',
-    comment: "One-word messages",
-    isActive: false,
-    predicate: message_is_small
-  },
-  
-  { name: 'TppFilterSpam',
-    comment: 'Misty spam',
-    isActive: true,
-    predicate: message_is_misty
-  },
+    new Filter('TppFilterCommand', "Commands (up, down, anarchy, etc)", message_is_command, true),
+    new Filter('TppFilterLink', "Non-whitelisted URLs", message_is_forbidden_link, true),
+    new Filter('TppFilterDonger', "Ascii art and dongers", message_is_donger, false),
+    new Filter('TppFilterSmall', "One-word messages", message_is_small, false),
+    new Filter('TppFilterSpam', 'Misty spam', message_is_misty, true),
 ];
 
 
 //Rewriters are applied to the text of a message 
 //before it is inserted in the chat box
-var rewriters = [  
-  { name: 'TppFilterDuplicateURL',
-    comment: "Copy pasted repetitions",
-    isActive: true,
-    rewriter: convert_copy_paste
-  },
+function Rewriter(name, comment, rewriter, isActive){
+    this.base = Option;
+    this.base(name, comment, update_chat_with_filter, isActive);
+    this.rewriter = rewriter;
+}
+Rewriter.prototype = new Option;
+var rewriters = [
+    new Rewriter('TppFilterDuplicateURL', "Copy pasted repetitions", convert_copy_paste, true),
 ];
 
 //Stylers are CSS classes that get toggled on/off
+function Styler(name, comment, element, filter_class, isActive){
+    this.base = Option;
+    this.base(name, comment, function (){
+        if(this.isActive)
+            $(this.element).addClass(this.filter_class);
+        else
+            $(this.element).removeClass(this.filter_class);
+    }, isActive);
+    this.element = element;
+    this.filter_class = filter_class;
+}
+Styler.prototype = new Option;
 var stylers = [
-  { name: 'TppConvertAllcaps',
-    comment: "Lowercase-only mode",
-    isActive: true,
-    element: '#chat_line_list',
-    class: 'allcaps_filtered'
-  },
+    new Styler('TppConvertAllcaps', "Lowercase-only mode", '#chat_line_list', 'allcaps_filtered', true),
 ]
 
 function passes_active_filters(message){
@@ -369,8 +365,12 @@ function initialize_ui(){
         $('#' + option.name)
         .on('change', function(){ 
             option.isActive = $(this).prop("checked");
+<<<<<<< Updated upstream
             update(option);
                 
+=======
+            option.update();
+>>>>>>> Stashed changes
         })
         .prop('checked', option.isActive);
     }
@@ -378,6 +378,7 @@ function initialize_ui(){
     filters.forEach(add_option);
     $('#chat_filter_dropmenu').append('<p style="margin-left:6px;">Automatically rewrite:</p>');
     rewriters.forEach(add_option);
+<<<<<<< Updated upstream
     
     function update_css(styler){
             if(styler.isActive)
@@ -388,6 +389,11 @@ function initialize_ui(){
     stylers.forEach(function(option){
         add_option(option, update_css);
         update_css(option);
+=======
+    stylers.forEach(function(option){
+        add_option(option);
+        option.update();
+>>>>>>> Stashed changes
     });
 }
 
